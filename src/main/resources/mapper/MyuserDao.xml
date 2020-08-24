@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeecgexcel.dao.MyuserDao">
+
+    <resultMap type="com.jeecgexcel.entity.Myuser" id="MyuserMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="carId" column="car_id" jdbcType="VARCHAR"/>
+        <result property="num" column="num" jdbcType="VARCHAR"/>
+        <result property="capacity" column="capacity" jdbcType="INTEGER"/>
+        <result property="startTime" column="start_time" jdbcType="TIMESTAMP"/>
+        <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="MyuserMap">
+        select
+          id, car_id, num, capacity, start_time, end_time
+        from test.myuser
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="MyuserMap">
+        select
+          id, car_id, num, capacity, start_time, end_time
+        from test.myuser
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="MyuserMap">
+        select
+        id, car_id, num, capacity, start_time, end_time
+        from test.myuser
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="carId != null and carId != ''">
+                and car_id = #{carId}
+            </if>
+            <if test="num != null and num != ''">
+                and num = #{num}
+            </if>
+            <if test="capacity != null">
+                and capacity = #{capacity}
+            </if>
+            <if test="startTime != null">
+                and start_time = #{startTime}
+            </if>
+            <if test="endTime != null">
+                and end_time = #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into test.myuser(car_id, num, capacity, start_time, end_time)
+        values (#{carId}, #{num}, #{capacity}, #{startTime}, #{endTime})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update test.myuser
+        <set>
+            <if test="carId != null and carId != ''">
+                car_id = #{carId},
+            </if>
+            <if test="num != null and num != ''">
+                num = #{num},
+            </if>
+            <if test="capacity != null">
+                capacity = #{capacity},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from test.myuser where id = #{id}
+    </delete>
+
+    <select id="queryByDay" resultType="com.jeecgexcel.dto.MyuserDTO">
+        select car_id,num,capacity,hour(start_time) as start_time,hour(end_time) as end_time
+        from myuser
+        where DATE_FORMAT(start_time,'%Y-%m-%d') = #{day} or start_time is null
+    </select>
+
+    <select id="queryByMonth" resultType="com.jeecgexcel.dto.MyuserDTO">
+        select car_id,num,capacity,day(start_time) as start_time,day(end_time) as end_time
+        from myuser
+        where DATE_FORMAT(start_time,'%Y-%m') = #{month} or start_time is null
+    </select>
+
+</mapper>
